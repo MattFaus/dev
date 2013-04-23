@@ -83,12 +83,24 @@ def test_datetime_calcs():
     print duration_of_membership
     print age_at_creation
 
+class PropertyOverload:
+    hi = 'Hello, World.'
+
+    @property
+    def hi(self):
+        return 'Goodbye!'
+
+def test_property_overload():
+    obj = PropertyOverload()
+    print obj.hi
+
 # Nope, doesn't work!
 # def test_default_value(required, optional=required):
 #     print required, optional
 
 if __name__ == "__main__":
-    test_datetime_calcs()
+    test_property_overload()
+    #test_datetime_calcs()
     #test_inner_func_scope_2(test_inner_func_scope)
     #test_inner_func_scope()
     # test_str_overload();
