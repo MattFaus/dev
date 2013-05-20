@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 import datetime
 
@@ -94,12 +95,41 @@ def test_property_overload():
     obj = PropertyOverload()
     print obj.hi
 
+def build_report_calls():
+    from dateutil import rrule
+    #http://stackoverflow.com/questions/153584/how-to-iterate-over-a-timespan-after-days-hours-weeks-and-months-in-python
+    start = datetime.date(2011, 1, 1)
+
+    # Go 1 month long so we can subtract form the next
+    end = datetime.date(2013, 6, 1)
+
+    month_starts = []
+
+    for dt in rrule.rrule(rrule.MONTHLY, dtstart=start, until=end):
+        month_starts.append(dt.date())
+
+    format = ("nohup "
+     r"../src/report_generator.py -c ../cfg/daily_report.json "
+      "\"<day>=CompanyMetricsBackfill-{0}\" "
+      "\"<month_first_day>={1}\" \"<month_last_day>={2}\" "
+      "\"<month>={0}\" "
+      ">> backfill_{0}.txt &")
+
+    for i in range(len(month_starts)-1):
+        end_day = month_starts[i+1] - datetime.timedelta(days=1)
+        month = str(end_day)[:7]
+        #print month_starts[i], end_day, month
+        print format.format(month, month_starts[i], end_day)
+
+
+
 # Nope, doesn't work!
 # def test_default_value(required, optional=required):
 #     print required, optional
 
 if __name__ == "__main__":
-    test_property_overload()
+    build_report_calls()
+    #test_property_overload()
     #test_datetime_calcs()
     #test_inner_func_scope_2(test_inner_func_scope)
     #test_inner_func_scope()
