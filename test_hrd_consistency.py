@@ -1175,5 +1175,10 @@ class HrdTest(gae_model.GAEModelTestCase):
         old_foo = db.get(old_foo.key())
         print hasattr(old_foo, 'num'), old_foo.num
 
+        # Try to put a different type into the old entity
+        old_foo.num = 'hi'
+
+        old_foo.put()
+
 
 
