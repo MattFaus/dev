@@ -121,14 +121,18 @@ def build_report_calls():
         #print month_starts[i], end_day, month
         print format.format(month, month_starts[i], end_day)
 
-
+def test_star_param(*params):
+    for p in params:
+        print p
 
 # Nope, doesn't work!
 # def test_default_value(required, optional=required):
 #     print required, optional
 
 if __name__ == "__main__":
-    build_report_calls()
+    test_star_param(*['hello', 'world'])
+    #test_star_param('hello', 'world')
+    #build_report_calls()
     #test_property_overload()
     #test_datetime_calcs()
     #test_inner_func_scope_2(test_inner_func_scope)
