@@ -1,4 +1,5 @@
 
+import sys
 import os
 import pprint
 
@@ -7,7 +8,7 @@ root_dir = '/Users/mattfaus/dev/dev-git'
 def parse_logs(file_paths):
     # print 'Parsing ', file_paths
     # These files are generated with a command line like the following:
-    # analytics@ip-10-0-0-108:~/kalogs/2013/04/10$ zgrep "UserData.<put>" *.gz >> 2013.04.10-UserDataPut.txt
+    # analytics@ip-10-0-0-108:~/kalogs/2013/04/10$ zgrep -e "UserData.*put" *.gz >> 2013.04.10-UserDataPut.txt
 
     pp = pprint.PrettyPrinter(indent=4)
 
@@ -43,6 +44,8 @@ def parse_log(the_file):
             print 'Could not understand', line
             continue
 
+        # 00:00:00Z.log.gz:27: api/v1_user.py:533 -- UserData.<put>
+        count = int(parts[0].split(':')[3])
         path_parts = parts[1].split(':')
         path = path_parts[0]
         src_line_num = path_parts[1]
@@ -51,9 +54,9 @@ def parse_log(the_file):
             line_count_dict[path] = {}
 
         if not line_count_dict[path].get(src_line_num):
-            line_count_dict[path][src_line_num] = 0
+            line_count_dict[path][src_line_num] = count
 
-        line_count_dict[path][src_line_num] += 1
+        line_count_dict[path][src_line_num] += count
 
     return line_count_dict
 
@@ -66,6 +69,9 @@ def print_dict(the_dict):
 
 if __name__ == "__main__":
     # Find files that look like 2013.03.10-UserDataPut.txt
-    files = [f for f in os.listdir(root_dir) if 'UserData' in f]
+    #files = [f for f in os.listdir(root_dir) if 'UserData' in f]
 
-    parse_logs(files)
+    if len(sys.argv) < 2:
+        print 'Usage: parse_userdata_put_logs.py <file_to_parse> [second_file] [third_file] [...] [nth file]'
+    else:
+        parse_logs(sys.argv[1:])

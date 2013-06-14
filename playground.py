@@ -125,12 +125,54 @@ def test_star_param(*params):
     for p in params:
         print p
 
+class ReferenceTest:
+
+    def _get_sheet_and_row(self, sheet_name):
+        """Gets a reference to the sheet and the value of the current row (
+        which should be written to).  This function creates the sheet if one
+        does not currently exist with the given name.
+        """
+        sheet_row = getattr(self, sheet_name + '_row', None)
+
+        if sheet_row == None:
+            setattr(self, sheet_name + '_row', 1)
+
+            sheet_row = getattr(self, sheet_name + '_row')
+
+        return sheet_row
+
+    def increment_attribute(self, name):
+        row = self._get_sheet_and_row(name)
+        row += 1
+
+    def increment_attribute_2(self, name):
+        # Make sure it's hot-created at least once
+        self._get_sheet_and_row(name)
+
+        row = getattr(self, name + '_row')
+        setattr(self, name + '_row', row + 1)
+
+def test_attr_reference():
+    tester = ReferenceTest()
+    tester.increment_attribute('hi')
+    tester.increment_attribute('hi')
+    tester.increment_attribute('hi')
+    tester.increment_attribute('hi')
+    print tester.hi_row
+
+    tester.increment_attribute_2('hi')
+    tester.increment_attribute_2('hi')
+    tester.increment_attribute_2('hi')
+    tester.increment_attribute_2('hi')
+    print tester.hi_row
+
 # Nope, doesn't work!
 # def test_default_value(required, optional=required):
 #     print required, optional
 
 if __name__ == "__main__":
-    test_star_param(*['hello', 'world'])
+    test_attr_reference()
+    #test_star_param(*['hello', 'world'])
     #test_star_param('hello', 'world')
     #build_report_calls()
     #test_property_overload()
