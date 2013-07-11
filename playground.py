@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
 import datetime
+import os
+import zipfile
+from cStringIO import StringIO
 
 class StrOverload:
     def __str__(self):
@@ -170,8 +173,47 @@ def test_attr_reference():
 # def test_default_value(required, optional=required):
 #     print required, optional
 
+def extract_nested_zipfile(path, parent_zip=None):
+    """Returns a ZipFile specified by path, even if the path contains
+    intermediary ZipFiles.  For example, /root/gparent.zip/parent.zip/child.zip
+    will return a ZipFile that represents child.zip
+    """
+
+    def extract_inner_zipfile(parent_zip, child_zip_path):
+        """Returns a ZipFile specified by child_zip_path that exists inside
+        parent_zip.
+        """
+        memory_zip = StringIO()
+        memory_zip.write(parent_zip.open(child_zip_path).read())
+        return zipfile.ZipFile(memory_zip)
+
+    if ('.zip' + os.sep) in path:
+        (parent_zip_path, child_zip_path) = os.path.relpath(path).split(
+            '.zip' + os.sep, 1)
+        parent_zip_path += '.zip'
+
+        if not parent_zip:
+            # This is the top-level, so read from disk
+            parent_zip = zipfile.ZipFile(parent_zip_path)
+        else:
+            # We're already in a zip, so pull it out and recurse
+            parent_zip = extract_inner_zipfile(parent_zip, parent_zip_path)
+
+        return extract_nested_zipfile(child_zip_path, parent_zip)
+    else:
+        if parent_zip:
+            return extract_inner_zipfile(parent_zip, path)
+        else:
+            return zipfile.ZipFile(path)
+
+
 if __name__ == "__main__":
-    test_attr_reference()
+    #extract_nested_zipfile('/genfiles/third_party.zip/third_party/pytz.zip/zoneinfo.zip')
+    print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap1.zip').open('hi.txt').read()
+    print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap2.zip/wrap1.zip').open('hi.txt').read()
+    print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap3.zip/wrap2.zip/wrap1.zip').open('hi.txt').read()
+
+    # test_attr_reference()
     #test_star_param(*['hello', 'world'])
     #test_star_param('hello', 'world')
     #build_report_calls()
