@@ -207,11 +207,53 @@ def extract_nested_zipfile(path, parent_zip=None):
             return zipfile.ZipFile(path)
 
 
+class Root(object):
+
+    def wrapper(self, hi):
+        self.foo(hi)
+
+    def foo(self, bar):
+        raise NotImplementedError()
+
+class Son(Root):
+
+    def __init__(self):
+        self.hair = "blue"
+
+    def foo(self, bar):
+        print "Son", bar, "hair:", self.hair
+
+class Daughter(Root):
+
+    def __init__(self, eyes):
+        self.e = eyes
+
+    def foo(self, bar):
+        print "Daughter", bar, "eyes:", self.e
+
+class Government(object):
+
+    def __init__(self, person):
+        person.foo('is under arrest!')
+        person.wrapper('was accessed via Root')
+        
+
+def test_classes():
+    a = Government(Son())
+
+    # Government(Daughter())
+    a = Government(Daughter('hazel'))
+
+    # a = Government(Root())
+
 if __name__ == "__main__":
+
+    test_classes()
+
     #extract_nested_zipfile('/genfiles/third_party.zip/third_party/pytz.zip/zoneinfo.zip')
-    print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap1.zip').open('hi.txt').read()
-    print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap2.zip/wrap1.zip').open('hi.txt').read()
-    print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap3.zip/wrap2.zip/wrap1.zip').open('hi.txt').read()
+    # print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap1.zip').open('hi.txt').read()
+    # print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap2.zip/wrap1.zip').open('hi.txt').read()
+    # print extract_nested_zipfile('/Users/mattfaus/dev/dev-git/wrap3.zip/wrap2.zip/wrap1.zip').open('hi.txt').read()
 
     # test_attr_reference()
     #test_star_param(*['hello', 'world'])
