@@ -316,18 +316,73 @@ def measure_pipeline_ids():
 # 900000 32400036B 31640KB 30MB
 # 1000000 36000036B 35156KB 34MB
 
+# See http://www.python.org/dev/peps/pep-0377/
+# and http://stackoverflow.com/questions/13074847/catching-exception-in-context-manager-enter
+class SkippableContext(object):
+
+    class SkipException(Exception):
+        pass
+
+    def __init__(self, skip):
+        self.skip = skip
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if type is self.SkipException:
+            return True
+
+        return False
+
+    def skip_if_necessary(self):
+        # Check to see if this stage should be skipped
+        if self.skip:
+            raise self.SkipException("Expected skip.")
+        else:
+            raise Exception("A real exception.")
+
+def test_skippable_context_manager():
+    with SkippableContext(True) as s:
+        s.skip_if_necessary()
+        print "This line is skipped expected to be skipped."
+
+    with SkippableContext(False) as s:
+        s.skip_if_necessary()
+        print "This line is skipped because of a real exception."
+
+
+class Nest(object):
+    hi = 'bye'
+    class Nested(object):
+        foo = 'bar'
+
+        def __init__(self):
+            print locals()
+
+        def p(self):
+            print locals()
+
+    def p(self):
+        n = self.Nested()
+        n.p()
+
+def test_nested_class():
+    n = Nest()
+    n.p()
+
+
 if __name__ == "__main__":
 
-    test_slice_step()
+    test_nested_class()
 
+    # test_skippable_context_manager()
+
+    # test_slice_step()
     # generate_int_list(1000)
-
     # measure_pipeline_ids()
-
     # test_serializiation()
-
     # test_double_star_parms()
-
     # test_classes()
 
     #extract_nested_zipfile('/genfiles/third_party.zip/third_party/pytz.zip/zoneinfo.zip')

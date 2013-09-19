@@ -1,12 +1,8 @@
 {
-    // Set to false to disable scrolling past the end of the buffer.
-    // On OS X, this value is overridden in the platform specific settings, so
-    // you'll need to place this line in your user settings to override it.
-    "scroll_past_end": true,
-
 	"font_size": 12.0,
 	"ignored_packages":
 	[
 		"Vintage"
-	]
+	],
+	"scroll_past_end": true
 }

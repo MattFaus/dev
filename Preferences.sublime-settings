@@ -328,7 +328,7 @@
     "file_exclude_patterns": ["*.pyc", "*.pyo", "*.exe", "*.dll", "*.obj","*.o", "*.a", "*.lib", "*.so", "*.dylib", "*.ncb", "*.sdf", "*.suo", "*.pdb", "*.idb", ".DS_Store", "*.class", "*.psd", "*.db"],
     // These files will still show up in the side bar, but won't be included in
     // Goto Anything or Find in Files
-    "binary_file_patterns": ["*.jpg", "*.jpeg", "*.png", "*.gif", "*.ttf", "*.tga", "*.dds", "*.ico", "*.eot", "*.pdf", "*.swf", "*.jar", "*.zip"],
+    "binary_file_patterns": ["*.jpg", "*.jpeg", "*.png", "*.gif", "*.ttf", "*.tga", "*.dds", "*.ico", "*.eot", "*.pdf", "*.swf", "*.jar", "*.zip", "*/genfiles/*", "*.min.js", "*.min.css", "*.less.css" , "_*,-*compressed.*", "*handlebars.*", "*/translations/*", "*/node_modules/*", "*/gae_bingo/static/*"],
 
     // List any packages to ignore here. When removing entries from this list,
     // a restart may be required if the package contains plugins.
